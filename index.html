@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Image Recognition App</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  </head>
+  <body class="bg-gray-100 min-h-screen p-8">
+    <div class="max-w-2xl mx-auto">
+      <h1 class="text-3xl font-bold text-center mb-8 text-gray-800">
+        Image Recognition App
+      </h1>
+
+      <!-- Camera Preview -->
+      <div class="mb-6">
+        <video
+          id="video"
+          class="w-full h-96 bg-black rounded-lg shadow-lg mb-4 object-cover"
+          autoplay
+          playsinline
+        ></video>
+
+        <div class="flex justify-center gap-4">
+          <button
+            id="startCamera"
+            class="bg-blue-500 text-white px-6 py-2 rounded-lg hover:bg-blue-600 transition"
+          >
+            Start Camera
+          </button>
+          <button
+            id="capture"
+            class="bg-green-500 text-white px-6 py-2 rounded-lg hover:bg-green-600 transition"
+          >
+            Take Photo
+          </button>
+        </div>
+      </div>
+
+      <!-- Captured Image Preview -->
+      <div class="mb-6">
+        <canvas
+          id="canvas"
+          class="w-full h-96 bg-gray-200 rounded-lg shadow-lg mb-4 object-cover hidden"
+        ></canvas>
+
+        <div id="captureControls" class="flex justify-center gap-4 hidden">
+          <button
+            id="retake"
+            class="bg-yellow-500 text-white px-6 py-2 rounded-lg hover:bg-yellow-600 transition"
+          >
+            Retake
+          </button>
+          <button
+            id="analyze"
+            class="bg-purple-500 text-white px-6 py-2 rounded-lg hover:bg-purple-600 transition"
+          >
+            Analyze Image
+          </button>
+        </div>
+      </div>
+
+      <!-- Results Section -->
+      <div id="results" class="hidden">
+        <h2 class="text-2xl font-semibold mb-4 text-gray-800">
+          Analysis Results
+        </h2>
+        <div id="analysisResults" class="bg-white p-6 rounded-lg shadow-lg">
+          <div id="loading" class="hidden text-center">
+            <div
+              class="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-500 mx-auto"
+            ></div>
+            <p class="mt-4 text-gray-600">Analyzing image...</p>
+          </div>
+          <pre
+            id="resultText"
+            class="whitespace-pre-wrap text-sm text-gray-700"
+          ></pre>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const video = document.getElementById('video');
+      const canvas = document.getElementById('canvas');
+      const startButton = document.getElementById('startCamera');
+      const captureButton = document.getElementById('capture');
+      const retakeButton = document.getElementById('retake');
+      const analyzeButton = document.getElementById('analyze');
+      const captureControls = document.getElementById('captureControls');
+      const results = document.getElementById('results');
+      const loading = document.getElementById('loading');
+      const resultText = document.getElementById('resultText');
+
+      // Start camera
+      startButton.addEventListener('click', async () => {
+        try {
+          const stream = await navigator.mediaDevices.getUserMedia({
+            video: true
+          });
+          video.srcObject = stream;
+          startButton.disabled = true;
+          captureButton.disabled = false;
+        } catch (err) {
+          console.error('Error accessing camera:', err);
+          alert(
+            'Error accessing camera. Please ensure you have granted camera permissions.'
+          );
+        }
+      });
+
+      // Capture photo
+      captureButton.addEventListener('click', () => {
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        canvas.getContext('2d').drawImage(video, 0, 0);
+
+        canvas.classList.remove('hidden');
+        captureControls.classList.remove('hidden');
+        video.classList.add('hidden');
+        captureButton.classList.add('hidden');
+        startButton.classList.add('hidden');
+      });
+
+      // Retake photo
+      retakeButton.addEventListener('click', () => {
+        canvas.classList.add('hidden');
+        captureControls.classList.add('hidden');
+        video.classList.remove('hidden');
+        captureButton.classList.remove('hidden');
+        startButton.classList.remove('hidden');
+        results.classList.add('hidden');
+      });
+
+      // Analyze image
+      analyzeButton.addEventListener('click', async () => {
+        loading.classList.remove('hidden');
+        results.classList.remove('hidden');
+        resultText.textContent = '';
+
+        try {
+          // Convert canvas to blob
+          const blob = await new Promise((resolve) =>
+            canvas.toBlob(resolve, 'image/jpeg')
+          );
+          const formData = new FormData();
+          formData.append('image', blob, 'capture.jpg');
+
+          // Upload to S3 and analyze (you'll need to implement this endpoint)
+          const response = await axios.post('YOUR_API_ENDPOINT', formData, {
+            headers: {
+              'Content-Type': 'multipart/form-data'
+            }
+          });
+
+          resultText.textContent = JSON.stringify(response.data, null, 2);
+        } catch (error) {
+          resultText.textContent = 'Error analyzing image: ' + error.message;
+        } finally {
+          loading.classList.add('hidden');
+        }
+      });
+
+      // Initially disable capture button
+      captureButton.disabled = true;
+    </script>
+  </body>
+</html>
