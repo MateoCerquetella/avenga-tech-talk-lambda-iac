@@ -18,7 +18,7 @@
     "configure:bucket": "aws s3 website s3://user-profile-images --index-document index.html"
   },
   "keywords": [],
-  "author": "",
+  "author": "Mateo Cerquetella",
   "license": "ISC",
   "dependencies": {
     "aws-sdk": "^2.1692.0",
