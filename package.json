@@ -8,7 +8,14 @@
   },
   "scripts": {
     "dev": "node handler.js",
-    "test": "node test/test_api.js"
+    "test": "node test/test_api.js",
+    "deploy": "serverless deploy",
+    "deploy:prod": "serverless deploy --stage prod",
+    "remove": "serverless remove",
+    "start:offline": "serverless offline",
+    "deploy:frontend": "aws s3 sync . s3://user-profile-images --exclude '*' --include 'index.html'",
+    "create:bucket": "aws s3api create-bucket --bucket user-profile-images --region us-east-1",
+    "configure:bucket": "aws s3 website s3://user-profile-images --index-document index.html"
   },
   "keywords": [],
   "author": "",

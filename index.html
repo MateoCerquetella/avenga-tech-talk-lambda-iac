@@ -3,14 +3,121 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Image Recognition App</title>
+    <title>Avenga - Tech Talk</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <style>
+      @keyframes image-fall {
+        0% {
+          top: 100%;
+        }
+        100% {
+          top: -10%;
+        }
+      }
+      @keyframes image-shake {
+        0% {
+          transform: translateX(0px);
+        }
+        50% {
+          transform: translateX(80px);
+        }
+        100% {
+          transform: translateX(0px);
+        }
+      }
+      .images {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: -1;
+      }
+      .image {
+        position: fixed;
+        top: -10%;
+        z-index: -1;
+        user-select: none;
+        cursor: default;
+        animation-name: image-fall, image-shake;
+        animation-duration: 7s, 3s;
+        animation-timing-function: linear, ease-in-out;
+        animation-iteration-count: infinite, infinite;
+        animation-play-state: running, running;
+      }
+
+      .image img {
+        width: 60px;
+        height: auto;
+      }
+      .image:nth-of-type(1) {
+        left: 10%;
+        animation-delay: 1s, 1s;
+      }
+      .image:nth-of-type(2) {
+        left: 20%;
+        animation-delay: 6s, 0.5s;
+      }
+      .image:nth-of-type(3) {
+        left: 30%;
+        animation-delay: 4s, 2s;
+      }
+      .image:nth-of-type(4) {
+        left: 40%;
+        animation-delay: 2s, 2s;
+      }
+      .image:nth-of-type(5) {
+        left: 50%;
+        animation-delay: 8s, 3s;
+      }
+      .image:nth-of-type(6) {
+        left: 60%;
+        animation-delay: 6s, 2s;
+      }
+      .image:nth-of-type(7) {
+        left: 70%;
+        animation-delay: 2.5s, 1s;
+      }
+      .image:nth-of-type(8) {
+        left: 80%;
+        animation-delay: 1s, 0s;
+      }
+      .image:nth-of-type(9) {
+        left: 90%;
+        animation-delay: 3s, 1.5s;
+      }
+      .image:nth-of-type(10) {
+        left: 95%;
+        animation-delay: 2s, 1s;
+      }
+    </style>
   </head>
   <body class="bg-gray-100 min-h-screen p-8">
+    <div class="images" aria-hidden="true">
+      <div class="image"><img src="./assets/avenga-logo.png" alt="" /></div>
+      <div class="image"><img src="./assets/avenga-logo.png" alt="" /></div>
+      <div class="image"><img src="./assets/avenga-logo.png" alt="" /></div>
+      <div class="image"><img src="./assets/avenga-logo.png" alt="" /></div>
+      <div class="image"><img src="./assets/avenga-logo.png" alt="" /></div>
+      <div class="image"><img src="./assets/avenga-logo.png" alt="" /></div>
+      <div class="image"><img src="./assets/avenga-logo.png" alt="" /></div>
+      <div class="image"><img src="./assets/avenga-logo.png" alt="" /></div>
+      <div class="image"><img src="./assets/avenga-logo.png" alt="" /></div>
+      <div class="image"><img src="./assets/avenga-logo.png" alt="" /></div>
+    </div>
+
     <div class="max-w-2xl mx-auto">
+      <div class="text-center mb-6">
+        <img
+          src="./assets/avenga-logo-long.svg"
+          alt="Avenga Logo"
+          class="mx-auto h-16"
+        />
+      </div>
+
       <h1 class="text-3xl font-bold text-center mb-8 text-gray-800">
-        Image Recognition App
+        Avenga - Tech Talk
       </h1>
 
       <!-- Camera Preview -->
