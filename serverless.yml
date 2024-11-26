@@ -1,0 +1,33 @@
+service: image-processing-api
+
+plugins:
+  - serverless-offline
+  - serverless-dotenv-plugin
+provider:
+  name: aws
+  runtime: nodejs14.x
+  iamRoleStatements:
+    - Effect: 'Allow'
+      Action:
+        - 's3:GetObject'
+        - 's3:PutObject'
+        - 'rekognition:DetectLabels'
+      Resource:
+        - 'arn:aws:s3:::user-profile-images/*'
+        - 'arn:aws:rekognition:*:*:*'
+
+functions:
+  imageProcessorFunction:
+    handler: handler.process
+    events:
+      - http:
+          path: process
+          method: post
+          cors: true
+
+resources:
+  Resources:
+    S3BucketUserProfileImages:
+      Type: AWS::S3::Bucket
+      Properties:
+        BucketName: user-profile-images

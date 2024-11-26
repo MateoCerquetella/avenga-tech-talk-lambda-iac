@@ -1,0 +1,23 @@
+{
+  "name": "avenga-tech-talk-lambda-iac",
+  "version": "1.0.0",
+  "main": "handler.js",
+  "type": "module",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "dev": "node handler.js",
+    "test": "node test/test_api.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "aws-sdk": "^2.1692.0",
+    "axios": "^1.7.8",
+    "serverless": "^4.4.12",
+    "@aws-sdk/client-s3": "^3.310.0",
+    "@aws-sdk/client-rekognition": "^3.310.0"
+  }
+}
