@@ -167,23 +167,50 @@
           </button>
         </div>
       </div>
+    </div>
 
-      <!-- Results Section -->
-      <div id="results" class="hidden">
-        <h2 class="text-2xl font-semibold mb-4 text-gray-800">
-          Analysis Results
-        </h2>
-        <div id="analysisResults" class="bg-white p-6 rounded-lg shadow-lg">
-          <div id="loading" class="hidden text-center">
-            <div
-              class="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-500 mx-auto"
-            ></div>
-            <p class="mt-4 text-gray-600">Analyzing image...</p>
+    <div
+      id="resultsModal"
+      class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50"
+    >
+      <div
+        class="bg-white rounded-lg max-w-2xl w-full mx-4 md:mx-auto relative"
+      >
+        <button
+          id="closeModal"
+          class="absolute top-4 right-4 text-gray-500 hover:text-gray-700"
+        >
+          <svg
+            class="w-6 h-6"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M6 18L18 6M6 6l12 12"
+            ></path>
+          </svg>
+        </button>
+
+        <div class="p-6">
+          <h2 class="text-2xl font-semibold mb-4 text-gray-800">
+            Analysis Results
+          </h2>
+          <div id="analysisResults" class="bg-gray-50 p-6 rounded-lg">
+            <div id="loading" class="hidden text-center">
+              <div
+                class="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-500 mx-auto"
+              ></div>
+              <p class="mt-4 text-gray-600">Analyzing image...</p>
+            </div>
+            <pre
+              id="resultText"
+              class="whitespace-pre-wrap text-sm text-gray-700"
+            ></pre>
           </div>
-          <pre
-            id="resultText"
-            class="whitespace-pre-wrap text-sm text-gray-700"
-          ></pre>
         </div>
       </div>
     </div>
@@ -196,9 +223,36 @@
       const retakeButton = document.getElementById('retake');
       const analyzeButton = document.getElementById('analyze');
       const captureControls = document.getElementById('captureControls');
-      const results = document.getElementById('results');
+      const resultsModal = document.getElementById('resultsModal');
+      const closeModal = document.getElementById('closeModal');
       const loading = document.getElementById('loading');
       const resultText = document.getElementById('resultText');
+
+      function showModal() {
+        resultsModal.classList.remove('hidden');
+        resultsModal.classList.add('flex');
+      }
+
+      function hideModal() {
+        resultsModal.classList.add('hidden');
+        resultsModal.classList.remove('flex');
+        loading.classList.add('hidden');
+        resultText.textContent = '';
+      }
+
+      closeModal.addEventListener('click', hideModal);
+
+      resultsModal.addEventListener('click', (e) => {
+        if (e.target === resultsModal) {
+          hideModal();
+        }
+      });
+
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && !resultsModal.classList.contains('hidden')) {
+          hideModal();
+        }
+      });
 
       // Start camera
       startButton.addEventListener('click', async () => {
@@ -237,13 +291,13 @@
         video.classList.remove('hidden');
         captureButton.classList.remove('hidden');
         startButton.classList.remove('hidden');
-        results.classList.add('hidden');
+        hideModal();
       });
 
       // Analyze image
       analyzeButton.addEventListener('click', async () => {
+        showModal();
         loading.classList.remove('hidden');
-        results.classList.remove('hidden');
         resultText.textContent = '';
 
         try {
@@ -254,7 +308,7 @@
           const formData = new FormData();
           formData.append('image', blob, 'capture.jpg');
 
-          // Upload to S3 and analyze (you'll need to implement this endpoint)
+          // Upload to S3 and analyze
           const response = await axios.post('YOUR_API_ENDPOINT', formData, {
             headers: {
               'Content-Type': 'multipart/form-data'
@@ -297,7 +351,7 @@
             <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
               <path
                 fill-rule="evenodd"
-                d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"
+                d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1G.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"
                 clip-rule="evenodd"
               ></path>
             </svg>
