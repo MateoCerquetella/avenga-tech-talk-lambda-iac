@@ -301,23 +301,24 @@
         resultText.textContent = '';
 
         try {
-          // Convert canvas to blob
-          const blob = await new Promise((resolve) =>
-            canvas.toBlob(resolve, 'image/jpeg')
-          );
-          const formData = new FormData();
-          formData.append('image', blob, 'capture.jpg');
-
-          // Upload to S3 and analyze
-          const response = await axios.post('YOUR_API_ENDPOINT', formData, {
-            headers: {
-              'Content-Type': 'multipart/form-data'
+          // Convert canvas to base64
+          const base64Image = canvas.toDataURL('image/jpeg');
+          
+          // Send as JSON instead of FormData
+          const response = await axios.post(
+            'https://521ao7smvd.execute-api.us-east-1.amazonaws.com/dev/process',
+            { image: base64Image },
+            {
+              headers: {
+                'Content-Type': 'application/json'
+              }
             }
-          });
+          );
 
           resultText.textContent = JSON.stringify(response.data, null, 2);
         } catch (error) {
           resultText.textContent = 'Error analyzing image: ' + error.message;
+          console.error('Full error:', error);
         } finally {
           loading.classList.add('hidden');
         }

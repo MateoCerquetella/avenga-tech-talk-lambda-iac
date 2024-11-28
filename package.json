@@ -13,18 +13,30 @@
     "deploy:prod": "serverless deploy --stage prod",
     "remove": "serverless remove",
     "start:offline": "serverless offline",
-    "deploy:frontend": "aws s3 sync . s3://user-profile-images --exclude '*' --include 'index.html'",
-    "create:bucket": "aws s3api create-bucket --bucket user-profile-images --region us-east-1",
-    "configure:bucket": "aws s3 website s3://user-profile-images --index-document index.html"
+    "deploy:frontend": "aws s3 sync . s3://avenga-user-profile-images --exclude '*' --include 'index.html'",
+    "create:bucket": "aws s3api create-bucket --bucket avenga-user-profile-images --region us-east-1",
+    "configure:bucket": "aws s3 website s3://avenga-user-profile-images --index-document index.html"
   },
   "keywords": [],
   "author": "Mateo Cerquetella",
   "license": "ISC",
   "dependencies": {
+    "@aws-sdk/client-rekognition": "^3.310.0",
+    "@aws-sdk/client-s3": "^3.310.0",
     "aws-sdk": "^2.1692.0",
     "axios": "^1.7.8",
-    "serverless": "^4.4.12",
-    "@aws-sdk/client-s3": "^3.310.0",
-    "@aws-sdk/client-rekognition": "^3.310.0"
+    "serverless": "^4.4.12"
+  },
+  "overrides": {
+    "serverless-offline": {
+      "serverless": "$serverless"
+    },
+    "serverless-dotenv-plugin": {
+      "serverless": "$serverless"
+    }
+  },
+  "devDependencies": {
+    "serverless-dotenv-plugin": "^6.0.0",
+    "serverless-offline": "^14.3.4"
   }
 }

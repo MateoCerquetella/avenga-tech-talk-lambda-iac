@@ -1,11 +1,8 @@
 service: image-processing-api
 
-plugins:
-  - serverless-offline
-  - serverless-dotenv-plugin
 provider:
   name: aws
-  runtime: nodejs14.x
+  runtime: nodejs18.x
   iamRoleStatements:
     - Effect: 'Allow'
       Action:
@@ -13,7 +10,7 @@ provider:
         - 's3:PutObject'
         - 'rekognition:DetectLabels'
       Resource:
-        - 'arn:aws:s3:::user-profile-images/*'
+        - 'arn:aws:s3:::avenga-user-profile-images/*'
         - 'arn:aws:rekognition:*:*:*'
 
 functions:
@@ -23,11 +20,19 @@ functions:
       - http:
           path: process
           method: post
-          cors: true
-
+          cors:
+            origin: '*' # Allow all origins
+            headers:
+              - Content-Type
+              - X-Amz-Date
+              - Authorization
+              - X-Api-Key
+              - X-Amz-Security-Token
+              - X-Amz-User-Agent
+            allowCredentials: false
 resources:
   Resources:
     S3BucketUserProfileImages:
       Type: AWS::S3::Bucket
       Properties:
-        BucketName: user-profile-images
+        BucketName: avenga-user-profile-images
